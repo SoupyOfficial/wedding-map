@@ -1,0 +1,180 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Enhanced OCR: Process All Photos",
+      "type": "shell",
+      "command": "C:/Users/JSCam/OneDrive/Documents/Development/wedding-map/.venv/Scripts/python.exe",
+      "args": ["tools/ocr_batch.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "OCR: Process Single Photo",
+      "type": "shell",
+      "command": "C:/Users/JSCam/OneDrive/Documents/Development/wedding-map/.venv/Scripts/python.exe",
+      "args": [
+        "-c",
+        "import sys; sys.path.append('tools'); from ocr_batch import ocr_one, write_md, classify, exif_datetime; import os; img='${input:imageName}'; result=ocr_one(f'src/images_raw/{img}'); write_md(os.path.splitext(img)[0], result, classify(result), None, img); print(f'✅ Processed {img}')"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Consolidate Results",
+      "type": "shell",
+      "command": "C:/Users/JSCam/OneDrive/Documents/Development/wedding-map/.venv/Scripts/python.exe",
+      "args": ["tools/consolidate.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Full Pipeline: OCR + Consolidate",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Enhanced OCR: Process All Photos", "Consolidate Results"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "Export to RTF",
+      "type": "shell",
+      "command": "pandoc",
+      "args": [
+        "src/master.md",
+        "-o",
+        "dist/wedding_consolidated.rtf",
+        "--standalone"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Complete Workflow: OCR + Consolidate + Export",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Enhanced OCR: Process All Photos",
+        "Consolidate Results",
+        "Export to RTF"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "Test Setup & Environment",
+      "type": "shell",
+      "command": "C:/Users/JSCam/OneDrive/Documents/Development/wedding-map/.venv/Scripts/python.exe",
+      "args": ["test_setup.py"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean Output Directories",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "if (Test-Path 'src/ocr_md') { Remove-Item 'src/ocr_md/*' -Force -Recurse }; if (Test-Path 'dist') { Remove-Item 'dist/*' -Force -Recurse }; Write-Host '🧹 Cleaned output directories'"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "View Processing Results",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Get-ChildItem 'src/ocr_md' -Filter '*.md' | Sort-Object LastWriteTime -Descending | Select-Object -First 5 | ForEach-Object { Write-Host \"📄 $($_.Name) - $($_.LastWriteTime)\" }"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "imageName",
+      "description": "Enter the image filename (e.g., IMG_1945.jpeg)",
+      "default": "IMG_1945.jpeg",
+      "type": "promptString"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+tags:
+  venue: ["pavilion","ballroom","capacity","banquet","site fee"]
+  budget: ["deposit","due","balance","total","fee","gratuity","tax","late fee"]
+  photographer: ["photography","photo","album","engagement session"]
+  florist: ["bouquet","centerpiece","floral","arrangement"]
+  dj: ["dj","music","playlist","sound","uplight"]
+  catering: ["menu","plated","buffet","bartender","per person"]
+  timeline: ["rehearsal","timeline","run of show","arrival","load-in","load out","rsvp"]
+  contract: ["contract","terms","cancellation","refund","reschedule"]
